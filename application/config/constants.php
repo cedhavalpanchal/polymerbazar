@@ -109,10 +109,6 @@ define("MONTH", 30 * DAY);
 
 $new_temp = explode("index.php",$_SERVER['SCRIPT_FILENAME']);
 define('SITE_PATH', $new_temp[0]);
-define('PEM_FILE_PATH', SITE_PATH."ios_pem/");
-
 define('PER_PAGE', 10);
-
-
 define('SUCCESS', 1);
 define('FAILED', 0);

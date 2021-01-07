@@ -95,9 +95,9 @@ if (strpos($base_url, "/admin/")) {
 }
 
 if ($flag == 1) {
-    $route['admin/' . $conntrol]                 = "admin/" . $conntrol . "/" . $conntrol . "_control";
-    $route['admin/' . $conntrol . '/add_record'] = 'admin/' . $conntrol . '/' . $conntrol . '_control/add_record';
-
+    ///admin side
+    $route['admin/' . $conntrol]                            = "admin/" . $conntrol . "/" . $conntrol . "_control";
+    $route['admin/' . $conntrol . '/add_record']            = 'admin/' . $conntrol . '/' . $conntrol . '_control/add_record';
     $route['admin/' . $conntrol . '/check_email']           = 'admin/' . $conntrol . '/' . $conntrol . '_control/check_email';
     $route['admin/' . $conntrol . '/check_username']        = 'admin/' . $conntrol . '/' . $conntrol . '_control/check_username';
     $route['admin/' . $conntrol . '/insert_data']           = 'admin/' . $conntrol . '/' . $conntrol . '_control/insert_data';
@@ -119,15 +119,15 @@ if ($flag == 1) {
     $route['admin/' . $conntrol . '/msg/(:any)'] = 'admin/' . $conntrol . '/' . $conntrol . '_control';
     $route['admin/' . $conntrol . '/(:any)']     = "admin/" . $conntrol . "/" . $conntrol . "_control";
 } elseif ($flag == 2) {
+    ////for api side
     $route['ws/employee_login']  = "ws/Employee_control/employee_login";
     $route['ws/forget_password'] = "ws/Employee_control/forget_password";
     $route['ws/change_password'] = "ws/Employee_control/change_password";
     $route['ws/user_verify']     = "ws/Employee_control/user_verify";
     $route['ws/history_sync']    = "ws/History_control/history_sync";
 } elseif ($flag == 3) {
-    //$route['index']   = "front/index/home";
+    ////for front side
     $route[$conntrol]                = "front/" . $conntrol . "/" . $conntrol . "_control";
-    $route[$conntrol . '/list_data'] = "front/" . $conntrol . "/" . $conntrol . "_control/list_data";
 }
 //For Admin Redirection
 $route['admin']           = "admin/login/login";

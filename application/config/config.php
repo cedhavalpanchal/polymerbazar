@@ -24,12 +24,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |
  */
 
-$config['project_name'] = 'Business CRM';
-$config['sitename']     = 'Business CRM';
+$config['project_name'] = 'Polymoer Bazar';
+$config['sitename']     = 'Polymoer Bazar';
 
 $uriSegments           = explode('index.php', $_SERVER['PHP_SELF']);
 $config['base_url']    = 'http://' . $_SERVER['HTTP_HOST'] . $uriSegments[0];
-$config['api_version'] = 'v.1.2';
+$config['api_version'] = 'v.1';
 
 $config['admin_email']      = 'pdpanchalmec@gmail.com';
 $config['company_email']    = 'pdpanchalmec@gmail.com';
@@ -327,7 +327,7 @@ $config['cache_query_string'] = false;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
  */
-$config['encryption_key'] = 'dhaval';
+$config['encryption_key'] = 'polymerbazar@webs';
 
 /*
 |--------------------------------------------------------------------------
@@ -526,15 +526,13 @@ $config['rewrite_short_tags'] = false;
 $config['proxy_ips'] = '';
 
 /*-------------Define a custom path ---------------------*/
-$config['css_path']          = $config['base_url'] . "css/";
-$config['js_path']           = $config['base_url'] . "js/";
-$config['asset_path']           = $config['base_url'] . "asset/";
-$config['image_path']        = $config['base_url'] . "images/";
-$config['upload_img_path']   = $config['base_url'] . "uploads/";
-$config['admin_base_url']    = $config['base_url'] . $config['index_page'] . 'admin/';
-$config['employee_base_url'] = $config['base_url'] . $config['index_page'] . 'employee/';
-
-$config['front_base_url'] = $config['base_url'] . $config['index_page'] . 'front/';
+$config['css_path']        = $config['base_url'] . "css/";
+$config['js_path']         = $config['base_url'] . "js/";
+$config['asset_path']      = $config['base_url'] . "asset/";
+$config['image_path']      = $config['base_url'] . "images/";
+$config['upload_img_path'] = $config['base_url'] . "uploads/";
+$config['admin_base_url']  = $config['base_url'] . $config['index_page'] . 'admin/';
+$config['front_base_url']  = $config['base_url'] . $config['index_page'] . 'front/';
 
 $config['base_path'] = $_SERVER['DOCUMENT_ROOT'];
 $config['base_path'] .= preg_replace('@/+$@', '', dirname($_SERVER['SCRIPT_NAME'])) . '';
