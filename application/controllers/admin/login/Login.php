@@ -42,10 +42,9 @@ class Login extends CI_Controller
      */
     public function do_login()
     {
-        $email    = strtolower(trim($this->input->post('email')));
-        $password = $this->Common_function_model->encrypt_script($this->input->post('password'));
+        $email           = strtolower(trim($this->input->post('email')));
+        $password        = $this->Common_function_model->encrypt_script($this->input->post('password'));
         $forgot_password = $this->input->post('forgot_email');
-
         if ($forgot_password) {
             $this->forgetpw_action();
         } else {

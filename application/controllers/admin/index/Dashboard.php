@@ -26,7 +26,7 @@ class Dashboard extends CI_Controller
 
     public function index()
     {
-        $this->page_title  = $this->lang->line('dashboard');
+        $this->page_title     = $this->lang->line('dashboard');
         $data['main_content'] = "admin/home/dashboard";
         $this->load->view('admin/include/template', $data);
     }

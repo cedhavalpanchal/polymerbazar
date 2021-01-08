@@ -222,3 +222,9 @@ $lang['user_not_approve']      = 'User account is not approved by admin';
 $lang['full_name']             = "FullName";
 $lang['common_label_fullname'] = "Full Name";
 $lang['search_here']           = 'Search here...';
+
+
+///category list
+$lang['category_management_title']  = "Category Management";
+$lang['parent_category']  = "Parent Category";
+$lang['category_name']  = "Category Name";

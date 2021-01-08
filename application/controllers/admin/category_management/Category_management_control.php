@@ -1,18 +1,18 @@
 <?php
 
 /*
-@Description: User controller
+@Description: Category controller
 @Author: Dhaval Panchal
 @Input:
 @Output:
-@Date: 4-7-2018
+@Date: 7-1-2021
  */
 
 if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class User_management_control extends CI_Controller
+class Category_management_control extends CI_Controller
 {
 
     public function __construct()
@@ -21,19 +21,19 @@ class User_management_control extends CI_Controller
         check_admin_login();
         $this->viewname        = $this->router->uri->segments[2];
         $this->user_type       = 'admin';
-        $this->table_name      = 'admin_management';
-        $this->page_title      = $this->lang->line('user_long');
+        $this->table_name      = 'category_management';
+        $this->page_title      = $this->lang->line('category_management_title');
         $this->admin_session   = $this->session->userdata($this->lang->line('business_crm_admin_session'));
         $this->message_session = $this->session->flashdata('message_session');
         // pr($this->admin_session);exit;
     }
 
     /*
-    @Description: Function for Get All User List
+    @Description: Function for Get Category list
     @Author: Dhaval Panchal
     @Input: - Search value or null
-    @Output: - all User list
-    @Date: 4-7-2018
+    @Output: - category list
+    @Date: 8-1-2021
      */
 
     public function index()
@@ -47,12 +47,12 @@ class User_management_control extends CI_Controller
         $allflag    = $this->input->post('allflag');
 
         if (!empty($allflag) && ($allflag == 'all' || $allflag == 'changesorting' || $allflag == 'changesearch')) {
-            $this->session->unset_userdata('admin_sortsearchpage_data');
+            $this->session->unset_userdata('category_sortsearchpage_data');
         }
 
         $data['sortfield']  = 'id';
         $data['sortby']     = 'desc';
-        $searchsort_session = $this->session->userdata('admin_sortsearchpage_data');
+        $searchsort_session = $this->session->userdata('category_sortsearchpage_data');
 
         if (!empty($sortfield) && !empty($sortby)) {
             $data['sortfield'] = $sortfield;
@@ -114,19 +114,19 @@ class User_management_control extends CI_Controller
             $uri_segment           = $this->uri->segment(3);
         }
 
-        $fields = array('*', 'CONCAT_WS(" ",first_name,last_name) as name');
+        $fields = array('*');
 
         $where = '';
 
         if (!empty($searchtext)) {
             $searchkeyword = mysqli_real_escape_string($this->db->conn_id, (trim(stripslashes($searchtext))));
-            $where         = '(CONCAT_WS(" ",first_name,last_name) LIKE "%' . $searchkeyword . '%" OR email LIKE "%' . $searchkeyword . '%" OR first_name LIKE "%' . $searchkeyword . '%" OR last_name LIKE "%' . $searchkeyword . '%") OR mobile LIKE "%' . $searchkeyword . '%" ';
+            $where         = '(name LIKE "%' . $searchkeyword . '%") ';
         }
 
-        //Get All Users
+        //Get All Category
         $sq_data_all = array
             (
-            "table"       => 'admin_management',
+            "table"       => 'category_management',
             "fields"      => $fields,
             "num"         => $config['per_page'],
             "offset"      => $uri_segment,
@@ -146,14 +146,14 @@ class User_management_control extends CI_Controller
         $data['uri_segment'] = $uri_segment;
 
         //Set Session
-        $admin_sortsearchpage_data = array(
+        $category_sortsearchpage_data = array(
             'sortfield'   => $data['sortfield'],
             'sortby'      => $data['sortby'],
             'searchtext'  => $data['searchtext'],
             'perpage'     => trim($data['perpage']),
             'uri_segment' => $uri_segment,
             'total_rows'  => $config['total_rows']);
-        $this->session->set_userdata('admin_sortsearchpage_data', $admin_sortsearchpage_data);
+        $this->session->set_userdata('category_sortsearchpage_data', $category_sortsearchpage_data);
 
         if ($this->input->post('result_type') == 'ajax') {
             $this->load->view($this->user_type . '/' . $this->viewname . '/ajax_list', $data);
@@ -164,18 +164,16 @@ class User_management_control extends CI_Controller
     }
 
     /*
-    @Description: Function Add New User details
+    @Description: Function Add Category
     @Author: Dhaval Panchal
-    @Input: -
-    @Output: - Load Form for add User details
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
 
     public function add_record()
     {
 
         $data['main_content'] = "admin/" . $this->viewname . "/add";
-        $data['foot_part_js'] = 'admin_add';
+        $data['foot_part_js'] = 'category_add';
         $this->load->view('admin/include/template', $data);
     }
 
@@ -184,7 +182,7 @@ class User_management_control extends CI_Controller
     @Author: Dhaval Panchal
     @Input: - Details of new User which is inserted into DB
     @Output: - List of User with new inserted records
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
 
     public function insert_data()
@@ -195,72 +193,22 @@ class User_management_control extends CI_Controller
         $this->load->library('form_validation');
 
         if ($this->input->server('REQUEST_METHOD') == 'POST' && $this->input->post('save') === 'submitForm') {
-            $this->form_validation->set_rules('first_name', 'first name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('last_name', 'last name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('email', 'Email', 'trim|required|is_unique[admin_management.email]');
-            $this->form_validation->set_rules('password', 'Password', 'trim|required|matches[npassword]');
-            $this->form_validation->set_rules('npassword', 'Password confirmation', 'trim|required');
-            $this->form_validation->set_message('check_email', 'Email already exists');
+            $this->form_validation->set_rules('name', 'name', 'trim|required|max_length[100]');
 
             if ($this->form_validation->run() == false) {
                 $data['main_content'] = $this->user_type . '/' . $this->viewname . "/add";
                 $this->load->view($this->user_type . '/include/template', $data);
             } else {
-                ///Insert New User
+                ///Insert New Category
                 $data = array
                     (
-                    "first_name"    => strtolower($this->input->post('first_name')),
-                    "last_name"     => strtolower($this->input->post('last_name')),
-                    "email"         => strtolower($this->input->post('email')),
-                    "mobile"        => $this->input->post('mobile'),
-                    "password"      => $this->Common_function_model->encrypt_script($this->input->post('password')),
-                    "created_date"  => date('Y-m-d H:i:s'),
-                    "modified_date" => date('Y-m-d H:i:s'),
-                    "status"        => 1,
+                    "name" => $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('name')))))),
+                    // "parent_id" => $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('parent_id')))))),
                 );
-
-                $bgImgPath = $this->config->item('admin_pic_big_path');
-
-                //Upload image
-                $this->load->model('Imageupload_model');
-
-                if (!empty($_FILES['profile_pic']['name'])) {
-                    $uploadFile       = 'profile_pic';
-                    $thumb            = "thumb";
-                    $hiddenImage      = '';
-                    $small_image_size = array(
-                        array
-                        (
-                            'imagepath' => $this->config->item('admin_pic_thumb_path'),
-                            'width'     => 100,
-                            'Height'    => 100,
-                        ),
-                    );
-                    $image_name = $this->Imageupload_model->uploadBigImage($uploadFile, $bgImgPath, $thumb, $hiddenImage, $small_image_size, true);
-
-                    if (!empty($image_name)) {
-                        $data += array("profile_pic" => $image_name);
-                    }
-                }
 
                 $inserted_data = $this->Common_function_model->insert($this->table_name, $data);
 
                 if (!empty($inserted_data)) {
-                    $template_data['password'] = $this->input->post('password');
-                    $template_data['name']     = $this->input->post('first_name') . ' ' . $this->input->post('last_name');
-                    $template_data['email']    = $this->input->post('email');
-                    $actdata                   = array(
-                        'adminData'  => $template_data,
-                        'login_link' => $login_link,
-                    );
-                    $activation_tmpl = $this->load->view('email_template/new_admin_insert', $actdata, true);
-
-                    $sub  = $this->config->item('sitename') . " : Welcome to " . $this->config->item('sitename');
-                    $from = $this->config->item('admin_email');
-                    $to   = $this->input->post('email');
-
-                    $this->Common_function_model->send_email($to, $sub, $activation_tmpl, $from);
-
                     ////////////
                     $response = array(
                         "status"  => $this->lang->line('message_type_success'),
@@ -288,25 +236,18 @@ class User_management_control extends CI_Controller
     }
 
     /*
-    @Description: Get Details of Edit admin
+    @Description: Edit category form
     @Author: Dhaval Panchal
-    @Input: - Id of User member whose details want to change
-    @Output: - Details of user which id is selected for update
-    @Date: 25-11-2016
+    @Date: 8-1-2021
      */
 
     public function edit_record()
     {
-        $id = $this->uri->segment(4);
-        /*$data['smenu_title'] = $this->lang->line('admin_left_menu15');
-        $data['submodule'] = $this->lang->line('admin_left_ssclient');*/
-
-        $field       = array('id', 'first_name', 'last_name', 'mobile', 'email', 'profile_pic');
+        $id          = $this->uri->segment(4);
         $match       = array('id' => $id);
         $sq_data_all = array
             (
             "table"     => $this->table_name,
-            "fields"    => $field,
             "condition" => $match,
         );
         $result = $this->Common_function_model->getmultiple_tables($sq_data_all);
@@ -316,17 +257,15 @@ class User_management_control extends CI_Controller
         }
 
         $data['editRecord']   = $result;
-        $data['foot_part_js'] = 'admin_add';
+        $data['foot_part_js'] = 'category_add';
         $data['main_content'] = $this->user_type . '/' . $this->viewname . "/add";
         $this->load->view($this->user_type . '/include/template', $data);
     }
 
     /*
-    @Description: Function for Update User Profile
+    @Description: Function for update category
     @Author: Dhaval Panchal
-    @Input: - Update details of User
-    @Output: - List with updated User details
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
 
     public function update_data()
@@ -354,68 +293,14 @@ class User_management_control extends CI_Controller
         }
 
         if ($this->input->server('REQUEST_METHOD') == 'POST' && $this->input->post('save') === 'submitForm') {
-            $password = $this->input->post('password');
-
-            $this->form_validation->set_rules('first_name', 'first name', 'trim|required|min_length[2]|max_length[100]');
-            $this->form_validation->set_rules('last_name', 'last name', 'trim|required|min_length[2]|max_length[100]');
-
-            if (!empty($password) && !empty($password)) {
-                $this->form_validation->set_rules('password', 'Password', 'trim|required|matches[npassword]');
-                $this->form_validation->set_rules('npassword', 'Password confirmation', 'trim|required');
-            }
+            $this->form_validation->set_rules('name', 'name', 'trim|required|max_length[100]');
 
             if ($this->form_validation->run() == false) {
                 $data['editRecord']   = $result;
                 $data['main_content'] = $this->user_type . '/' . $this->viewname . "/add";
                 $this->load->view($this->user_type . '/include/template', $data);
             } else {
-                $cdata['first_name']    = strtolower($this->input->post('first_name'));
-                $cdata['last_name']     = strtolower($this->input->post('last_name'));
-                $cdata['mobile']        = $this->input->post('mobile');
-                $cdata['modified_date'] = date('Y-m-d H:i:s');
-
-                $oldcontactimg = $this->input->post('oldfile');
-                $oldfile1      = $this->input->post('oldfile1');
-                $bgImgPath     = $this->config->item('admin_pic_big_path');
-
-                //Upload image
-
-                if (!empty($_FILES['profile_pic']['name'])) {
-                    $uploadFile       = 'profile_pic';
-                    $thumb            = "thumb";
-                    $hiddenImage      = !empty($oldcontactimg) ? $oldcontactimg : '';
-                    $small_image_size = array(
-                        array
-                        (
-                            'imagepath' => $this->config->item('admin_pic_thumb_path'),
-                            'width'     => 350,
-                            'Height'    => 150,
-                        ),
-                    );
-                    $this->load->model('Imageupload_model');
-                    $image_name = $this->Imageupload_model->uploadBigImage($uploadFile, $bgImgPath, $thumb, $hiddenImage, $small_image_size, true);
-
-                    if (!empty($image_name)) {
-                        $cdata += array("profile_pic" => $image_name);
-                    }
-                } elseif ($oldfile1 == '' && !empty($oldcontactimg)) {
-                    $image = $this->input->post('oldfile');
-
-                    if (file_exists($this->config->item('admin_pic_big_path') . $image)) {
-                        unlink($this->config->item('admin_pic_big_path') . $image);
-                    }
-
-                    if (file_exists($this->config->item('admin_pic_thumb_path') . $image)) {
-                        unlink($this->config->item('admin_pic_thumb_path') . $image);
-                    }
-
-                    $cdata += array("profile_pic" => '');
-                } elseif (!empty($oldcontactimg)) {
-                    $cdata += array("profile_pic" => $oldcontactimg);
-                }
-
-                //END
-
+                $cdata['name'] = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('name'))))));
                 $this->Common_function_model->update($this->table_name, $cdata, array('id' => $cdata['id']));
 
                 $response = array(
@@ -423,7 +308,7 @@ class User_management_control extends CI_Controller
                     "message" => $this->lang->line('common_edit_success_msg'),
                 );
                 $this->session->set_flashdata('message_session', $response);
-                $searchsort_session = $this->session->userdata('admin_sortsearchpage_data');
+                $searchsort_session = $this->session->userdata('category_sortsearchpage_data');
                 $pagingid           = $searchsort_session['uri_segment'];
                 redirect($this->user_type . '/' . $this->viewname . '/' . $pagingid);
             }
@@ -440,7 +325,7 @@ class User_management_control extends CI_Controller
     /*
     @Description: Function for Active and Inactive By Admin
     @Author: Dhaval Panchal
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
 
     public function status_update()
@@ -451,7 +336,7 @@ class User_management_control extends CI_Controller
         $cdata['status'] = $this->input->post('status');
         $this->Common_function_model->update($this->table_name, $cdata, array('id' => $cdata['id']));
 
-        $searchsort_session = $this->session->userdata('admin_sortsearchpage_data');
+        $searchsort_session = $this->session->userdata('category_sortsearchpage_data');
 
         if (!empty($searchsort_session['uri_segment'])) {
             $pagingid = $searchsort_session['uri_segment'];
@@ -465,7 +350,7 @@ class User_management_control extends CI_Controller
     /*
     @Description: Function for Bulk action to delete admin
     @Author: Dhaval Panchal
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
     public function ajax_delete_all()
     {
@@ -487,7 +372,7 @@ class User_management_control extends CI_Controller
             }
         }
 
-        $searchsort_session = $this->session->userdata('admin_sortsearchpage_data');
+        $searchsort_session = $this->session->userdata('category_sortsearchpage_data');
 
         if (!empty($searchsort_session['uri_segment'])) {
             $pagingid = $searchsort_session['uri_segment'];
@@ -499,67 +384,9 @@ class User_management_control extends CI_Controller
     }
 
     /*
-    @Description: Function for checking admin already exist or not
-    @Author: Dhaval Panchal
-    @Input: - Email and id
-    @Date: 4-7-2018
-     */
-
-    public function check_email($email = '', $user_id = '')
-    {
-
-        if (!empty($email) && $email != '' && !empty($user_id) && $user_id != '') {
-            $email   = $email;
-            $user_id = $user_id;
-            $boolean = 'yes';
-        } else {
-            $email   = $this->input->post('email');
-            $user_id = $this->input->post('user_id');
-            $boolean = 'no';
-        }
-
-        $where_str = '';
-        $message   = '';
-
-        if (!empty($email)) {
-            if (!empty($user_id) && !empty($email)) {
-                $where_str = ' id != ' . $user_id . ' AND email = "' . $email . '"';
-            } elseif (!empty($email)) {
-                $where_str = ' email = "' . $email . '"';
-            }
-
-            $field       = array('id', 'CONCAT_WS(" ",first_name,last_name) as name', 'email', 'status');
-            $sq_data_all = array
-                (
-                "table"       => 'admin_management',
-                "fields"      => $field,
-                "wherestring" => $where_str,
-            );
-            $check_email = $this->Common_function_model->getmultiple_tables($sq_data_all);
-
-            if (!empty($check_email)) {
-                $message = "false";
-            } else {
-                $message = "true";
-            }
-        }
-
-        if ($boolean == 'yes') {
-            if ($message == 'true') {
-                return true;
-            } elseif ($message == 'false') {
-                return false;
-            }
-        } else {
-            echo $message;
-            exit;
-        }
-    }
-
-    /*
     @Description: Function for Multiple Active and Inactive By Admin
     @Author: Dhaval Panchal
-    @Date: 4-7-2018
+    @Date: 8-1-2021
      */
     public function ajax_status_all()
     {
@@ -572,7 +399,7 @@ class User_management_control extends CI_Controller
             }
         }
 
-        $searchsort_session = $this->session->userdata('admin_sortsearchpage_data');
+        $searchsort_session = $this->session->userdata('category_sortsearchpage_data');
         echo $pagingid      = !empty($searchsort_session['uri_segment']) ? $searchsort_session['uri_segment'] : 0;
     }
 }

@@ -84,6 +84,7 @@ if(!empty($user_image)){
           <ul class="nav navbar-nav">
             <li class="<?= ($module == 'dashboard') ? 'active':'' ?>" ><a href="<?=base_url('admin/dashboard');?>"><i class="nav-icon dashboard-icon"></i><span>Dashboard</span></a></li>
             <li class="<?= ($module == 'user_management') ? 'active':'' ?>"><a href="<?=base_url('admin/user_management');?>"><span><i class="nav-icon usr-icon"></i>Users</span></a></li>
+            <li class="<?= ($module == 'category_management') ? 'active':'' ?>"><a href="<?=base_url('admin/category_management');?>"><span><i class="nav-icon usr-icon"></i>Category</span></a></li>
           </ul>
      
           <ul class="nav navbar-nav navbar-right profile-dropdown">

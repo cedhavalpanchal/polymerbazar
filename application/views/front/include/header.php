@@ -24,7 +24,7 @@
 <header class="navbar navbar-light navbar-sticky header">
             <div class="container-fluid">
                 <a href="<?php echo base_url(); ?>" class="site-logo">
-                    <img alt="Sequin Closet" class="logo-default" src="<?=!empty($this->site_info[0]['site_logo']) && file_exists($this->config->item('image_site_logo') . $this->site_info[0]['site_logo']) ? $this->config->item('image_site_logo_url') . $this->site_info[0]['site_logo'] : $this->config->item('base_url') . 'images/logo.png'?>" width="200px">
+                    <img alt="Sequin Closet" class="logo-default" src="<?=!empty($this->site_info[0]['site_logo']) && file_exists($this->config->item('image_site_logo') . $this->site_info[0]['site_logo']) ? $this->config->item('image_site_logo_url') . $this->site_info[0]['site_logo'] : $this->config->item('base_url') . 'images/logo.jpg'?>" width="200px">
 
                 </a>
                 <h4 class="pull-right admin-portal  top-btn-mrg"><a class="btn btn-primary" href="<?=base_url('admin')?>">Admin Portal</a></h4>
