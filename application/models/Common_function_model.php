@@ -97,6 +97,11 @@ class Common_function_model extends CI_Model
             'smtp_pass'    => $this->config->item('smtp_pass'),
             'smtp_timeout' => $this->config->item('smtp_timeout'),
             'mailtype'     => 'html',
+            'starttls'     => false,
+            'newline'      => "\r\n",
+            'crlf'         => "\n",
+            'smtp_keepalive' => TRUE,
+            'verifypeer'   => false,
         );
         // pr($config); exit;
         $this->email->initialize($config);
@@ -108,19 +113,12 @@ class Common_function_model extends CI_Model
         $this->email->to($to);
         $this->email->cc($cc);
         $this->email->bcc($bcc);
-        //        if(!empty($data['attachment_email']))
-        //        {
-        //            foreach($data['attachment_email'] as $row_attachment)
-        //                            $this->email->attach("uploads/attachment_file/".$row_attachment['attachment']);
-        //            //$this->email->attach("uploads/attachment_temp/".$data['attachment']);
-        //        }
-
         if (!empty($data['attachment'])) {
             $this->email->attach($data['file_path'] . $data['attachment']);
         }
 
         $this->email->send();
-        //echo $this->email->print_debugger(); die;
+        // echo $this->email->print_debugger(); die;
         $this->email->clear(true);
     }
 

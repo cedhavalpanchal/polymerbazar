@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>:: Blank CRM ::</title>
+    <title>Login</title>
     <meta name="description" content="${2}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="icon.png">
@@ -24,22 +24,40 @@ form .error {
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-4 col-sm-5 col-xs-12 col-md-push-8 col-sm-push-7">
-                    <div class="login-outer">
+                    <div class="login-outer" id="login-block">
                         <div class="text-center"><img src="<?php echo $this->config->item('image_path') ?>/logo.png" alt=""></div>
                         <?= $this->load->view('admin/include/alert_message') ?>
-                        <form action="" method="post" name="registration" class="login-form">
+                        <form action="" method="post" id="login-form">
                             <div class="form-group">
                                 <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
                             </div>
                             <div class="form-group">
                                 <input type="password" class="form-control" name="password" id="password" placeholder="Password">
                             </div>
-                            <!--  <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                            </div> -->
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary btn-blue text-white m-t-20">Login</button>
+                            </div>
+                            <div class="text-center">
+                                <button type="button" id="forgot_show" class="btn btn-primary btn-blue text-white m-t-20">Forgot Password</button>
+                            </div>
+                        </form>
+                        <!-- <div class="text-center">
+                            <a href="#" class="forget-psw">Forgot Password?</a>
+                            <a href="#" class="reset-psw">Click to reset Password.</a>
+                        </div> -->
+                    </div>
+                    <div class="login-outer hidden" id="forgot-pwd-block">
+                        <div class="text-center"><img src="<?php echo $this->config->item('image_path') ?>/logo.png" alt=""></div>
+                        <?= $this->load->view('admin/include/alert_message') ?>
+                        <form action="" method="post" name="forgot_pwd" id="forgot-pwd-form">
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="forgot_email" name="forgot_email" aria-describedby="emailHelp" placeholder="Enter your email">
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-blue text-white m-t-20">Send</button>
+                            </div>
+                            <div class="text-center">
+                                <button id="login_show" type="button" class="btn btn-primary btn-blue text-white m-t-20">Login</button>
                             </div>
                         </form>
                         <!-- <div class="text-center">
@@ -61,13 +79,22 @@ form .error {
 </div>
     <script src="<?php echo $this->config->item('js_path') ?>jquery-3.2.1.min.js"></script>
     <script src="<?php echo $this->config->item('js_path') ?>bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="<?= $this->config->item('js_path') ?>common.js"></script>
+    <script src="<?php echo $this->config->item('js_path') ?>jquery.validate.min.js"></script>
+    <script src="<?= $this->config->item('js_path') ?>common.js"></script>
     <script type="text/javascript">
         // Wait for the DOM to be ready
-        $(function() {
+        $(document).ready(function () {
+
+            $(document).on('click', '#login_show', function() {
+                $('#forgot-pwd-block').addClass('hidden');
+                $('#login-block').removeClass('hidden');
+            });
+            $(document).on('click', '#forgot_show', function() {
+                $('#login-block').addClass('hidden');
+                $('#forgot-pwd-block').removeClass('hidden');
+            });
           
-            $("form").validate({
+            $("#login-form").validate({
             
                 rules: {
                 
@@ -91,9 +118,25 @@ form .error {
                     form.submit();
                 }
             });
-        });
 
-        $(document).ready(function () {
+            $("#forgot-pwd-form").validate({
+            
+                rules: {
+                    forgot_email: {
+                        required: true,
+                        email: true
+                    }
+                },
+                messages: {
+                    forgot_email: "Please enter a valid email address"
+                },
+            
+                submitHandler: function(form) {
+                    form.submit();
+                }
+            });
+
+        
             setTimeout(function() {
                 $('#div_msg').hide('slow');
             }, 5000);

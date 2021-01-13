@@ -1,7 +1,7 @@
 /*
  @Description: Comman JS Functions
- @Author: Mit Makwana
- @Date: 29-3-2016
+ @Author: Dhaval Panchal
+ @Date: 09-01-2021
  */
 (function($) {
     "user strict";

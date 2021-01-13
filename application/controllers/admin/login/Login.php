@@ -42,15 +42,16 @@ class Login extends CI_Controller
      */
     public function do_login()
     {
-        $email           = strtolower(trim($this->input->post('email')));
-        $password        = $this->Common_function_model->encrypt_script($this->input->post('password'));
-        $forgot_password = $this->input->post('forgot_email');
-        if ($forgot_password) {
-            $this->forgetpw_action();
+        $email        = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('email'))))));
+        $password     = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('password'))))));
+        $password     = $this->Common_function_model->encrypt_script($password);
+        $forgot_email = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('forgot_email'))))));
+
+        if ($forgot_email) {
+            $this->forgetpw_action($forgot_email);
         } else {
 
             if ($email && $password) {
-
                 $field = array('*', 'CONCAT_WS(" ",first_name,last_name) as name');
                 $match = array('email' => $email, 'password' => $password);
 
@@ -110,40 +111,29 @@ class Login extends CI_Controller
     @Output      : password to the email address
     @Date        : 06-05-14
      */
-    public function forgetpw_action()
+    public function forgetpw_action($email)
     {
-        $this->load->model('User_model');
-
-        $email    = $this->input->post('forgot_email');
-        $response = $this->User_model->forgot_password($email, 1);
-
-        $fields      = array('id', 'name', 'email', 'password', 'status');
         $match       = array('email' => $email);
         $sq_data_all = array
             (
             "table"     => 'admin_management',
-            "fields"    => $fields,
             "condition" => $match,
         );
         $result = $this->Common_function_model->getmultiple_tables($sq_data_all);
 
         if ((count($result)) > 0) {
-            $name  = $result[0]['name'];
-            $email = $result[0]['email'];
+            $name = $result[0]['first_name'];
 
             if ($result[0]['status'] == 1) {
-                $password   = $this->Common_function_model->decrypt_script($result[0]['password']);
-                $encBlastId = urlencode(base64_encode($result[0]['id']));
+                $encBlastId = $this->Common_function_model->encrypt_script($result[0]['id']);
                 // Email Start
 
-                $loginLink = $this->config->item('base_url') . 'reset_password/reset_password_template/' . $encBlastId;
+                $loginLink = $this->config->item('base_url') . 'admin/reset_password/' . $encBlastId;
 
                 $pass_variable_activation = array('name' => $name, 'email' => $email, 'loginLink' => $loginLink);
                 $data['actdata']          = $pass_variable_activation;
-
-                $activation_tmpl = $this->load->view('reset_password/reset_password_link/list', $data, true);
-                $email           = $this->input->post('forgot_email');
-                $sub             = $this->config->item('sitename') . " : Admin Forgot Password";
+                $activation_tmpl          = $this->load->view('email_template/reset_password', $data, true);
+                $sub                      = $this->config->item('sitename') . " : Admin Forgot Password";
 
                 $from     = $this->config->item('admin_email');
                 $sendmail = $this->Common_function_model->send_email($email, $sub, $activation_tmpl, $from);
@@ -162,7 +152,54 @@ class Login extends CI_Controller
             "status"  => $status,
             "message" => $msg,
         );
-        $this->session->set_flashdata('response', $response);
-        $this->load->view('admin/login/login');
+        $this->session->set_flashdata('message_session', $response);
+        redirect('admin/login');
+    }
+
+    public function reset_password($token)
+    {
+        $admin_id = $this->Common_function_model->decrypt_script($token);
+
+        if (!empty($admin_id)) {
+            $view_data['token'] = $admin_id;
+            $this->load->view('admin/login/reset_password', $view_data);
+        } else {
+            $response = array(
+                "message" => "No Such User Found",
+                "status"  => $this->lang->line('message_type_failed'),
+            );
+            $this->session->set_flashdata('message_session', $response);
+            redirect('admin/login');
+        }
+    }
+
+    public function change_password()
+    {
+
+        $admin_id    = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('token'))))));
+        $password    = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('password'))))));
+        $cnfpassword = $this->security->xss_clean(strip_tags(addslashes(trim(strtolower($this->input->post('cnf_password'))))));
+        // pr($_POST);exit;
+
+        if (!empty($password) && !empty($cnfpassword) && !empty($admin_id)) {
+            $password = $this->Common_function_model->encrypt_script($password);
+            // $admin_id = $this->Common_function_model->decrypt_script($token);
+            // echo $token;exit;
+            $update['password'] = $password;
+            $this->Common_function_model->update('admin_management', $update, '', " id = $admin_id ");
+            // echo $this->db->last_query();exit;
+            $response = array(
+                "message" => "Password changed Successfully",
+                "status"  => $this->lang->line('message_type_failed'),
+            );
+        } else {
+            $response = array(
+                "message" => "Password and confirm password is required",
+                "status"  => $this->lang->line('message_type_failed'),
+            );
+        }
+
+        $this->session->set_flashdata('message_session', $response);
+        redirect('admin/login');
     }
 }

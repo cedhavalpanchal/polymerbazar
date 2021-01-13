@@ -30,9 +30,6 @@ $config['sitename']     = 'Polymoer Bazar';
 $uriSegments           = explode('index.php', $_SERVER['PHP_SELF']);
 $config['base_url']    = 'http://' . $_SERVER['HTTP_HOST'] . $uriSegments[0];
 $config['api_version'] = 'v.1';
-
-$config['admin_email']      = 'pdpanchalmec@gmail.com';
-$config['company_email']    = 'pdpanchalmec@gmail.com';
 $config['android_noti_key'] = '';
 $config['smtp_timeout']     = '30';
 $config['mailtype']         = 'html';

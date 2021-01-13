@@ -94,6 +94,8 @@ if (strpos($base_url, "/admin/")) {
     $conntrol = !empty($expo1['1']) ? $expo1['1'] : '';
 }
 
+// echo $flag;exit;
+
 if ($flag == 1) {
     ///admin side
     $route['admin/' . $conntrol]                            = "admin/" . $conntrol . "/" . $conntrol . "_control";
@@ -127,10 +129,14 @@ if ($flag == 1) {
     $route['ws/history_sync']    = "ws/History_control/history_sync";
 } elseif ($flag == 3) {
     ////for front side
-    $route[$conntrol]                = "front/" . $conntrol . "/" . $conntrol . "_control";
+    $route[$conntrol] = "front/" . $conntrol . "/" . $conntrol . "_control";
 }
+
 //For Admin Redirection
-$route['admin']           = "admin/login/login";
-$route['admin/login']     = "admin/login/login";
-$route['admin/logout']    = "admin/login/logout";
-$route['admin/dashboard'] = "admin/index/dashboard";
+$route['admin']                       = "admin/login/login";
+$route['admin/login']                 = "admin/login/login";
+$route['admin/logout']                = "admin/login/logout";
+$route['admin/reset_password/(:any)'] = "admin/login/login/reset_password/$1";
+$route['admin/change_password']       = "admin/login/login/change_password";
+$route['admin/dashboard']             = "admin/index/dashboard";
+// print_r($route);exit;
